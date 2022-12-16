@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+
+.commandesPage{
+	padding-top:200px
+}
+table.customTableStyle{
+	margin-top: 25px;
+	border-top: 1px solid rgba(0,0,0,0.3);
+	border-left: 1px solid rgba(0,0,0,0.3);
+	border-right: 1px solid rgba(0,0,0,0.3);
+}
+.customTableStyle th:not(:last-child) {
+  
+  
+  border-right: 1px solid rgba(0,0,0,0.3);
+}
+ 

@@ -1,5 +1,7 @@
 package communs.dto;
 
+import java.util.List;
+
 public class CommandeDto {
 	private int cdeId;
 	private String cdeClient;
@@ -7,10 +9,16 @@ public class CommandeDto {
 	private String cdeIntitule;
 	private String cdeMontant;
 	private String cdeNum;
-	//list ?
+	private List<ObservationDto> observations;
 	
 	public CommandeDto() {
 		
+	}
+	public List<ObservationDto> getObservations() {
+		return observations;
+	}
+	public void setObservations(List<ObservationDto> observations) {
+		this.observations = observations;
 	}
 	public int getCdeId() {
 		return cdeId;
