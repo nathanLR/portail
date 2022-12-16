@@ -1,6 +1,6 @@
 package communs.dto;
 
-public class Commande {
+public class CommandeDto {
 	private int cdeId;
 	private String cdeClient;
 	private String cdeDate;
@@ -9,7 +9,7 @@ public class Commande {
 	private String cdeNum;
 	//list ?
 	
-	public Commande() {
+	public CommandeDto() {
 		
 	}
 	public int getCdeId() {
