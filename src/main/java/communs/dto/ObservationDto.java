@@ -6,6 +6,9 @@ public class ObservationDto {
 	private String obsTexte;
 	private CommandeDto commande;
 	private ProfilDto profil;
+	public ObservationDto() {
+		
+	}
 	public int getOsbId() {
 		return osbId;
 	}

@@ -3,22 +3,25 @@ package communs.dto;
 import java.util.List;
 
 public class CommandeDto {
+	
+	private static int incrementId = 3;
+	
 	private int cdeId;
 	private String cdeClient;
 	private String cdeDate;
 	private String cdeIntitule;
 	private String cdeMontant;
 	private String cdeNum;
-	private List<ObservationDto> observations;
+	private List<ObservationDto> cdeObservations;
 	
 	public CommandeDto() {
-		
+		this.cdeId = incrementId++;
 	}
-	public List<ObservationDto> getObservations() {
-		return observations;
+	public List<ObservationDto> getCdeObservations() {
+		return cdeObservations;
 	}
-	public void setObservations(List<ObservationDto> observations) {
-		this.observations = observations;
+	public void setCdeObservations(List<ObservationDto> cdeObservations) {
+		this.cdeObservations = cdeObservations;
 	}
 	public int getCdeId() {
 		return cdeId;

@@ -30,7 +30,7 @@
 					<tbody>
 						<c:forEach items="${requestScope.commandes}" var="commande">
 							<tr>
-								<td><a href="commande?cdeId=${commande.cdeId}">${commande.cdeNum}</a>
+								<td><a href="commande?action=modifier&cdeId=${commande.cdeId}">${commande.cdeNum}</a>
 								</td>
 								<td>${commande.cdeClient}</td>
 								<td>${commande.cdeDate}</td>
