@@ -25,7 +25,7 @@ public class CommandeServlet extends HttpServlet {
 
 	static List<CommandeDto> commandes = null;
 	static ProfilDto profilCommun = null;
-
+	static int identifiantCommandeRequete = -1;
 	
 	private void initialisationDesDonnees() {
 		if (commandes == null) {
@@ -87,39 +87,51 @@ public class CommandeServlet extends HttpServlet {
 		RequestDispatcher disp;
 		if (reqAction != null) {
 			// action demandée
+			request.setAttribute("action", reqAction);
 			if(reqAction.equals("creer")) {
 				//action de création => aucun champ n'est désactivé et les observations ne sont pas affichées (il n'y en a pas)
-				request.setAttribute("action", reqAction);
+				
 				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
 				disp.forward(request, response);
 			}else if(reqAction.equals("visualiser")) {
 				//action de visualisation => tous les champs sont désactivés sauf observation et les observations son affichées.
 				int cdeId = Integer.parseInt(request.getParameter("cdeId"));
 				request.setAttribute("commande", commandeDepuisId(cdeId));
-				request.setAttribute("action", reqAction);
+				identifiantCommandeRequete = cdeId;
 				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
 				disp.forward(request, response);
 			}else if(reqAction.equals("modifier")) {
 				// Action de modification => tous les champs sont activés sauf observation et numéro cde et les observations ne sont pas affichées
 				int cdeId = Integer.parseInt(request.getParameter("cdeId"));
+				identifiantCommandeRequete = cdeId;
 				request.setAttribute("commande", commandeDepuisId(cdeId));
-				request.setAttribute("action", reqAction);
+				
 				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
 				disp.forward(request, response);
 			}else if(reqAction.equals("supprimer")) {
-				//action de suppression => tout est désactivé
+				//action de suppression 
 				int cdeId = Integer.parseInt(request.getParameter("cdeId"));
 				commandes.removeIf(cde -> cde.getCdeId() == cdeId);
 				request.setAttribute("commandes", listeDesCommandes());
 				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
 				disp.forward(request, response);
-			}else if(reqAction.equals("duppliquer")){
+			}else if(reqAction.equals("dupliquer")){
 				
+				int cdeId = Integer.parseInt(request.getParameter("cdeId"));
+				
+				identifiantCommandeRequete = cdeId;
+				
+				CommandeDto commandeADupliquer = commandeDepuisId(cdeId);
+				
+				request.setAttribute("commande", commandeADupliquer);
+				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+				disp.forward(request, response);
 			}else {
 				//erreur => 404 ?
 			}
 		} else {
 			// renvoyer les données à listecommande.jsp
+			identifiantCommandeRequete = -1;
 			request.setAttribute("commandes", listeDesCommandes());
 			disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
 			disp.forward(request, response);
@@ -132,31 +144,81 @@ public class CommandeServlet extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		CommandeDto newCde = new CommandeDto();
-		newCde.setCdeNum(request.getParameter("cdeNum"));
-		newCde.setCdeDate(request.getParameter("cdeDate"));
-		newCde.setCdeClient(request.getParameter("cdeClient"));
-		newCde.setCdeMontant(request.getParameter("cdeMontant"));
-		newCde.setCdeIntitule(request.getParameter("cdeIntitule"));
-		
-		if(request.getParameter("cdeObservation").length() == 0) {
-			newCde.setCdeObservations(new ArrayList<ObservationDto>());
+		String typeDeSoumission = request.getParameter("typeDeSoumission");
+		CommandeDto nouvelleCde = new CommandeDto();
+		if(typeDeSoumission.equals("creer")) {
+			
+			nouvelleCde.setCdeNum(request.getParameter("cdeNum"));
+			nouvelleCde.setCdeDate(request.getParameter("cdeDate"));
+			nouvelleCde.setCdeClient(request.getParameter("cdeClient"));
+			nouvelleCde.setCdeMontant(request.getParameter("cdeMontant"));
+			nouvelleCde.setCdeIntitule(request.getParameter("cdeIntitule"));
+			
+			if(request.getParameter("cdeObservation").length() == 0) {
+				nouvelleCde.setCdeObservations(new ArrayList<ObservationDto>());
+			}else {
+				List<ObservationDto> cdeObservations = new ArrayList<ObservationDto>();
+				ObservationDto cdeObservation = new ObservationDto();
+				
+				cdeObservation.setObsTexte(request.getParameter("cdeObservation"));
+				cdeObservation.setProfil(profilCommun);
+				cdeObservation.setObsDateHeure(new Date().toString());
+				cdeObservation.setCommande(nouvelleCde);
+				cdeObservations.add(cdeObservation);
+				nouvelleCde.setCdeObservations(cdeObservations);
+			}
+			
+			
+			commandes.add(nouvelleCde);
+			request.setAttribute("commandes", listeDesCommandes());
+			request.getRequestDispatcher("/jsp/listecommande.jsp").forward(request, response);	
+			
+			
+		}else if(typeDeSoumission.equals("dupliquer")) {
+			
+			nouvelleCde.setCdeNum(request.getParameter("cdeNum"));
+			nouvelleCde.setCdeDate(request.getParameter("cdeDate"));
+			nouvelleCde.setCdeClient(request.getParameter("cdeClient"));
+			nouvelleCde.setCdeMontant(request.getParameter("cdeMontant"));
+			nouvelleCde.setCdeIntitule(request.getParameter("cdeIntitule"));
+			//copie des observations
+			nouvelleCde.setCdeObservations(commandeDepuisId(identifiantCommandeRequete).getCdeObservations());
+			commandes.add(nouvelleCde);
+			identifiantCommandeRequete = -1;
+			request.setAttribute("commandes", listeDesCommandes());
+			request.getRequestDispatcher("/jsp/listecommande.jsp").forward(request, response);	
+			
+			
+		}else if(typeDeSoumission.equals("modifier")){
+			
+			CommandeDto commandeAModifier = commandeDepuisId(identifiantCommandeRequete);
+			commandeAModifier.setCdeNum(request.getParameter("cdeNum"));
+			commandeAModifier.setCdeDate(request.getParameter("cdeDate"));
+			commandeAModifier.setCdeClient(request.getParameter("cdeClient"));
+			commandeAModifier.setCdeMontant(request.getParameter("cdeMontant"));
+			commandeAModifier.setCdeIntitule(request.getParameter("cdeIntitule"));
+			identifiantCommandeRequete = -1;
+			request.setAttribute("commandes", listeDesCommandes());
+			request.getRequestDispatcher("/jsp/listecommande.jsp").forward(request, response);
+			
+		}else if(typeDeSoumission.equals("visualiser")){
+			ObservationDto nouvelleObs = new ObservationDto();
+			nouvelleObs.setObsTexte(request.getParameter("cdeObservation"));
+			nouvelleObs.setProfil(profilCommun);
+			nouvelleObs.setObsDateHeure(new Date().toString());
+			nouvelleObs.setCommande(commandeDepuisId(identifiantCommandeRequete));
+			commandeDepuisId(identifiantCommandeRequete).getCdeObservations().add(nouvelleObs);
+			identifiantCommandeRequete = -1;
+			request.setAttribute("commandes", listeDesCommandes());
+			request.getRequestDispatcher("/jsp/listecommande.jsp").forward(request, response);
+			//rajout d'une nouvelle observation
 		}else {
-			List<ObservationDto> cdeObservations = new ArrayList<ObservationDto>();
-			ObservationDto cdeObservation = new ObservationDto();
-			cdeObservation.setOsbId(newCde.getCdeId());
-			cdeObservation.setObsTexte(request.getParameter("cdeObservation"));
-			cdeObservation.setProfil(profilCommun);
-			cdeObservation.setObsDateHeure(new Date().toString());
-			cdeObservation.setCommande(newCde);
-			cdeObservations.add(cdeObservation);
-			newCde.setCdeObservations(cdeObservations);
+			
 		}
 		
 		
-		commandes.add(newCde);
-		request.setAttribute("commandes", listeDesCommandes());
-		request.getRequestDispatcher("/jsp/listecommande.jsp").forward(request, response);
+		
+		
 	}
 	
 	

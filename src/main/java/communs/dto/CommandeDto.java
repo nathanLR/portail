@@ -2,7 +2,7 @@ package communs.dto;
 
 import java.util.List;
 
-public class CommandeDto {
+public class CommandeDto implements Cloneable{
 	
 	private static int incrementId = 3;
 	
@@ -14,7 +14,7 @@ public class CommandeDto {
 	private String cdeNum;
 	private List<ObservationDto> cdeObservations;
 	
-	public CommandeDto() {
+	public CommandeDto(){
 		this.cdeId = incrementId++;
 	}
 	public List<ObservationDto> getCdeObservations() {

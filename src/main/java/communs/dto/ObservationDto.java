@@ -1,16 +1,17 @@
 package communs.dto;
 
 public class ObservationDto {
-	private int osbId;
+	private static int incrementation = 0;
+	private int obsId;
 	private String obsDateHeure;
 	private String obsTexte;
 	private CommandeDto commande;
 	private ProfilDto profil;
 	public ObservationDto() {
-		
+		this.obsId = incrementation++;
 	}
 	public int getOsbId() {
-		return osbId;
+		return obsId;
 	}
 	public ProfilDto getProfil() {
 		return profil;
@@ -19,7 +20,7 @@ public class ObservationDto {
 		this.profil = profil;
 	}
 	public void setOsbId(int osbId) {
-		this.osbId = osbId;
+		this.obsId = osbId;
 	}
 	public String getObsDateHeure() {
 		return obsDateHeure;
