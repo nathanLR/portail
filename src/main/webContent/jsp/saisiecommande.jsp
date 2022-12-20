@@ -25,7 +25,7 @@
 				
 				<div class="row">
 					<div class="col col-md-8 col-md-offset-2">
-						<form method="POST" action="commande">
+						<form method="POST" action="commande" id="formulaireDeSaisie">
 							<div class="form-group">
 								<label class="sr-only" for="numero_cde">N° de Cde</label>
 								<div class="input-group">
@@ -43,7 +43,9 @@
 									<div class="input-group-addon">Date réf.</div>
 									<input type="text" class="form-control" id="date_creation"
 										name="cdeDate" value="${requestScope.commande.cdeDate }"
-										<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>>
+										<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>
+										placeholder="JJ/MM/AAAA"
+										>
 										
 								</div>
 							</div>
