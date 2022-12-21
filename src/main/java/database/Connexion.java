@@ -15,7 +15,7 @@ public class Connexion {
 	private static final String UTILISATEUR = "nathan";
 	private static final String MOT_DE_PASSE = "nathan";
 	private static final String DRIVER_POSTGRESQL = "org.postgresql.Driver";
-	private static final String PERSISTENCE_NAME = "portailnathan";
+	private static final String PERSISTENCE_NAME = "Portail";
 	
 	private static EntityManagerFactory emf = null;
 	
@@ -29,7 +29,7 @@ public class Connexion {
 	}
 	public static Map<String, String> getProprietes(){
 		Map<String, String> proprietes = new HashMap<String, String>();
-		proprietes.put(PersistenceUnitProperties.JDBC_URL, URL_BASE_DE_DONNEES + "?searchpath=public");
+		proprietes.put(PersistenceUnitProperties.JDBC_URL, URL_BASE_DE_DONNEES + "?searchpath=portail");
 		proprietes.put(PersistenceUnitProperties.JDBC_DRIVER, DRIVER_POSTGRESQL);
 		proprietes.put(PersistenceUnitProperties.JDBC_USER, UTILISATEUR);
 		proprietes.put(PersistenceUnitProperties.JDBC_PASSWORD, MOT_DE_PASSE);

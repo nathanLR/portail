@@ -229,6 +229,7 @@ public class JpqlServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.print("deGet");
 		request.setCharacterEncoding(UTF8);
 		response.setCharacterEncoding(UTF8);
 		StringBuilder html = new StringBuilder(660);
@@ -236,7 +237,7 @@ public class JpqlServlet extends HttpServlet {
 		Integer maxResults = 0;
 		
 		try {
-			Integer.valueOf(request.getParameter("maxResults"));
+			maxResults = Integer.valueOf(request.getParameter("maxResults") == null ? "0" : request.getParameter("maxResults"));
 		}catch(NumberFormatException nfe) {
 			nfe.printStackTrace();
 		}

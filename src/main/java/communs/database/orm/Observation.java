@@ -9,6 +9,7 @@ import java.sql.Time;
  * The persistent class for the observation database table.
  * 
  */
+@Table(name ="observation", schema = "portail")
 @Entity
 @NamedQuery(name="Observation.findAll", query="SELECT o FROM Observation o")
 public class Observation implements Serializable {

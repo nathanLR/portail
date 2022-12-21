@@ -10,6 +10,7 @@ import java.util.List;
  * The persistent class for the commande database table.
  * 
  */
+@Table(name = "commande", schema = "portail")
 @Entity
 @NamedQuery(name="Commande.findAll", query="SELECT c FROM Commande c")
 public class Commande implements Serializable {

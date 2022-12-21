@@ -10,7 +10,7 @@ public class ObservationDto {
 	public ObservationDto() {
 		this.obsId = incrementation++;
 	}
-	public int getOsbId() {
+	public int getObsId() {
 		return obsId;
 	}
 	public ProfilDto getProfil() {
@@ -19,7 +19,7 @@ public class ObservationDto {
 	public void setProfil(ProfilDto profil) {
 		this.profil = profil;
 	}
-	public void setOsbId(int osbId) {
+	public void setObsId(int osbId) {
 		this.obsId = osbId;
 	}
 	public String getObsDateHeure() {

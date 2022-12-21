@@ -9,6 +9,7 @@ import java.util.List;
  * The persistent class for the profil database table.
  * 
  */
+@Table(name = "profil", schema = "portail")
 @Entity
 @NamedQuery(name="Profil.findAll", query="SELECT p FROM Profil p")
 public class Profil implements Serializable {
