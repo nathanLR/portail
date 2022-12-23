@@ -11,7 +11,6 @@ import java.sql.Time;
  */
 @Table(name ="observation", schema = "portail")
 @Entity
-@NamedQuery(name="Observation.findAll", query="SELECT o FROM Observation o")
 public class Observation implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import communs.dto.CommandeDto;
 import communs.dto.ObservationDto;
 import communs.dto.ProfilDto;
+import database.Connexion;
+import services.CommandeService;
 
 /**
  * Servlet implementation class CommandeServlet
@@ -28,38 +30,38 @@ public class CommandeServlet extends HttpServlet {
 	static int identifiantCommandeRequete = -1;
 	
 	private void initialisationDesDonnees() {
-		if (commandes == null) {
-			commandes = new ArrayList<CommandeDto>();
-			CommandeDto c1 = new CommandeDto();
-			c1.setCdeId(0);
-			c1.setCdeClient("CMA-CGM");
-			c1.setCdeDate("16/12/2022");
-			c1.setCdeIntitule("Commande de conteneurs");
-			c1.setCdeMontant("500000");
-			c1.setCdeNum("CDE4587");
-			c1.setCdeObservations(new ArrayList<ObservationDto>());
-			commandes.add(c1);
-
-			CommandeDto c2 = new CommandeDto();
-			c2.setCdeId(1);
-			c2.setCdeClient("BMW Group");
-			c2.setCdeDate("10/12/2022");
-			c2.setCdeIntitule("Commande de pieces de moteur");
-			c2.setCdeMontant("25000");
-			c2.setCdeNum("CDE4580");
-			c2.setCdeObservations(new ArrayList<ObservationDto>());
-			commandes.add(c2);
-
-			CommandeDto c3 = new CommandeDto();
-			c3.setCdeId(2);
-			c3.setCdeClient("AIRBUS");
-			c3.setCdeDate("15/12/2022");
-			c3.setCdeIntitule("Commande de vitre d'avion");
-			c3.setCdeMontant("1000000");
-			c3.setCdeNum("CDE4567");
-			c3.setCdeObservations(new ArrayList<ObservationDto>());
-			commandes.add(c3);
-		}
+//		if (commandes == null) {
+//			commandes = new ArrayList<CommandeDto>();
+//			CommandeDto c1 = new CommandeDto();
+//			c1.setCdeId(0);
+//			c1.setCdeClient("CMA-CGM");
+//			c1.setCdeDate("16/12/2022");
+//			c1.setCdeIntitule("Commande de conteneurs");
+//			c1.setCdeMontant("500000");
+//			c1.setCdeNum("CDE4587");
+//			c1.setCdeObservations(new ArrayList<ObservationDto>());
+//			commandes.add(c1);
+//
+//			CommandeDto c2 = new CommandeDto();
+//			c2.setCdeId(1);
+//			c2.setCdeClient("BMW Group");
+//			c2.setCdeDate("10/12/2022");
+//			c2.setCdeIntitule("Commande de pieces de moteur");
+//			c2.setCdeMontant("25000");
+//			c2.setCdeNum("CDE4580");
+//			c2.setCdeObservations(new ArrayList<ObservationDto>());
+//			commandes.add(c2);
+//
+//			CommandeDto c3 = new CommandeDto();
+//			c3.setCdeId(2);
+//			c3.setCdeClient("AIRBUS");
+//			c3.setCdeDate("15/12/2022");
+//			c3.setCdeIntitule("Commande de vitre d'avion");
+//			c3.setCdeMontant("1000000");
+//			c3.setCdeNum("CDE4567");
+//			c3.setCdeObservations(new ArrayList<ObservationDto>());
+//			commandes.add(c3);
+//		}
 		if(profilCommun == null) {
 			profilCommun = new ProfilDto();
 			profilCommun.setPrfId(0);
@@ -130,11 +132,20 @@ public class CommandeServlet extends HttpServlet {
 				//erreur => 404 ?
 			}
 		} else {
-			// renvoyer les données à listecommande.jsp
+			//recuperer les commandes de la BDD et les mettre dans la liste des commandes
+			CommandeService cdeService = new CommandeService();
+			commandes = cdeService.actionLister();
+			
+			
+			
+			
 			identifiantCommandeRequete = -1;
 			request.setAttribute("commandes", listeDesCommandes());
 			disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
 			disp.forward(request, response);
+			
+			
+			
 		}
 
 	}

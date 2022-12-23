@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+	<named-query name="SelectionneToutesLesCommandes">
+		<description>Récupère toutes les commandes de la base de données.</description>
+		<query>SELECT c FROM Commande c</query>
+	</named-query>
+	<named-query name="SelectionneToutesLesObservations">
+		<description>Récupère toutes les observations de la base de données.</description>
+		<query>SELECT o FROM Observation o</query>
+	</named-query>
+	<named-query name="SelectionneTousLesProfils">
+		<description>Récupère tous les profils de la base de données.</description>
+		<query>SELECT p FROM Profil p</query>
+	</named-query>
+
+</entity-mappings>

@@ -19,7 +19,16 @@ public class ObservationMetier {
 	}
 	
 	public Erreur verifier(ObservationDto obs) {
-		return new Erreur();
+		Erreur erreur  = new Erreur();
+		boolean champTexte = obs.getObsTexte().length() > 0;
+		boolean champProfil = true;// verifier le profil ??
+		
+		if(!champTexte) {
+			erreur.ajouterMessage("Le message concernant l'observation ne peut pas être vide.");
+		}
+		
+		
+		return champTexte ? null : erreur;
 	}
 	//select
 	public List<ObservationDto> lister(){
@@ -38,7 +47,7 @@ public class ObservationMetier {
 		return new Erreur();
 	}
 	
-	public ObservationDto convertirUnOrmEnDto(Observation orm) {
+	public static ObservationDto convertirUnOrmEnDto(Observation orm) {
 		ObservationDto ormToDto = new ObservationDto();
 		
 		ormToDto.setObsId(orm.getObsId());
@@ -56,7 +65,7 @@ public class ObservationMetier {
 		
 	
 	
-	public Observation convertirUnDtoEnOrm(ObservationDto dto, Observation orm) {
+	public static Observation convertirUnDtoEnOrm(ObservationDto dto, Observation orm) {
 		return new Observation();
 	}
 }
