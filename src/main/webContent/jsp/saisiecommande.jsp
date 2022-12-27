@@ -17,7 +17,7 @@
 	href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 <body>
-	
+	${sessionScope.commande.cdeId }
 	<div class="container">
 		<div class="row">
 			<div class="col col-md-8 col-md-offset-2">
@@ -33,7 +33,7 @@
 									<input type="text" class="form-control" id="numero_cde"
 										name="cdeNum"
 										
-										value="${requestScope.commande.cdeNum}"
+										value="${sessionScope.commande.cdeNum}"
 										<%=request.getParameter("action").matches("visualiser|modifier") ? "readonly" : "" %>>
 								</div>
 							</div>
@@ -42,9 +42,9 @@
 								<div class="input-group">
 									<div class="input-group-addon">Date réf.</div>
 									<input type="text" class="form-control" id="date_creation"
-										name="cdeDate" value="${requestScope.commande.cdeDate }"
+										name="cdeDate" value="${sessionScope.commande.cdeDate }"
 										<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>
-										placeholder="JJ/MM/AAAA"
+										placeholder="AAAA-MM-JJ"
 										>
 										
 								</div>
@@ -55,7 +55,7 @@
 									<div class="input-group-addon">Client</div>
 									<input type="text" class="form-control" id="client"
 									<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>
-										name="cdeClient" value="${requestScope.commande.cdeClient }">
+										name="cdeClient" value="${sessionScope.commande.cdeClient }">
 								</div>
 							</div>
 							<div class="form-group">
@@ -64,14 +64,14 @@
 									<div class="input-group-addon">Montant</div>
 									<input type="text" class="form-control" id="montant"
 									<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>
-										name="cdeMontant" value="${requestScope.commande.cdeMontant }">
+										name="cdeMontant" value="${sessionScope.commande.cdeMontant }">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="intitule">Intitulé :</label> <input type="text"
 									class="form-control" id="intitule" name="cdeIntitule"
 									<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>
-									value="${requestScope.commande.cdeIntitule }">
+									value="${sessionScope.commande.cdeIntitule }">
 							</div>
 							<div class="form-group">
 								<label for="observation">Observation :</label>
@@ -83,13 +83,15 @@
 							<div class="form-group">
 								<a class="btn btn-primary" href="commande"><span
 									class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
-								<button type="submit" class="btn btn-success" name="typeDeSoumission" value="${requestScope.action}"
+								<button type="submit" class="btn btn-success" name="action" value="${sessionScope.action}"
 									id="boutonDeSoumission" >
 									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 								</button>
+								<c:if test="${requestScope.action != 'dupliquer'}">
 								<a class="btn btn-danger"
-									href="commande?action=supprimer&cdeId=${requestScope.commande.cdeId }"><span
+									href="commande?action=supprimer&cdeId=${sessionScope.commande.cdeId }"><span
 									class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+								</c:if>
 							</div>
 
 						</form>
@@ -101,7 +103,7 @@
 			<div class="row">
 				<div class="col-md-8 col-md-offset-2">
 					<h2>Historique des observations</h2>
-					<c:forEach items="${requestScope.commande.cdeObservations}" var="observation">
+					<c:forEach items="${sessionScope.commande.cdeObservations}" var="observation">
 					
 					
 					<div class="row">
@@ -133,6 +135,6 @@
 		src="${pageContext.request.contextPath}/js/jquery-1.12.4.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/datatables.min.js"></script>
-	<script src="${pageContext.request.contextPath}/js/commandesPage.js"></script>
+	<%-- <script src="${pageContext.request.contextPath}/js/commandesPage.js"></script> --%>
 </body>
 </html>
