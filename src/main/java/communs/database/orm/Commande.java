@@ -1,7 +1,11 @@
 package communs.database.orm;
 
 import java.io.Serializable;
+
+
 import javax.persistence.*;
+
+
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +45,7 @@ public class Commande implements Serializable {
 	private List<Observation> observations;
 
 	public Commande() {
+		
 	}
 
 	public Integer getCdeId() {

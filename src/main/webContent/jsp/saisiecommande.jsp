@@ -83,7 +83,7 @@
 							<div class="form-group">
 								<a class="btn btn-primary" href="commande"><span
 									class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
-								<button type="submit" class="btn btn-success" name="action" value="${sessionScope.action}"
+								<button type="submit" class="btn btn-success" name="action" value="${requestScope.action}"
 									id="boutonDeSoumission" >
 									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 								</button>

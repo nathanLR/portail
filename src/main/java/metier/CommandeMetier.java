@@ -1,11 +1,11 @@
 package metier;
 
+
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import communs.Erreur;
@@ -83,9 +83,24 @@ public class CommandeMetier {
 
 	// put
 	public Erreur modifier(CommandeDto cde) {
-
-		// appel de verifier()
-		return new Erreur();
+		Erreur verification = this.verifier(cde);
+		if (verification == null) {
+			// insertion
+			try {
+				this.em.getTransaction().begin();
+				this.em.merge(this.convertirUnDtoEnOrm(cde));
+				this.em.getTransaction().commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		} else {
+			
+			return verification;
+		}
+				
+		
+		
 	}
 
 	// insert
@@ -149,7 +164,11 @@ public class CommandeMetier {
 		dtoToOrm.setCdeClient(dto.getCdeClient());
 		dtoToOrm.setCdeIntitule(dto.getCdeIntitule());
 		dtoToOrm.setCdeMontant(Double.parseDouble(dto.getCdeMontant()));
-		dtoToOrm.setCdeDate(new Date(dto.getCdeDate()));
+		//2022-12-25
+		String[] date = dto.getCdeDate().split("-");
+		
+		dtoToOrm.setCdeDate(new Date(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2])));
+		
 		if (dto.getCdeObservations().size() > 0) {
 			List<Observation> observations = new ArrayList<Observation>();
 			for (ObservationDto obsDto : dto.getCdeObservations()) {
