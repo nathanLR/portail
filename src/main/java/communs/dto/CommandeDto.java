@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CommandeDto implements Cloneable{
 	
-	private static int incrementId = 3;
+	
 	
 	private int cdeId;
 	private String cdeClient;
@@ -15,7 +15,7 @@ public class CommandeDto implements Cloneable{
 	private List<ObservationDto> cdeObservations;
 	
 	public CommandeDto(){
-		this.cdeId = incrementId++;
+		
 	}
 	public List<ObservationDto> getCdeObservations() {
 		return cdeObservations;

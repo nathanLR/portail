@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import communs.Erreur;
 import communs.database.orm.Commande;
 import communs.database.orm.Observation;
+import communs.database.orm.Profil;
 import communs.dto.CommandeDto;
 import communs.dto.ObservationDto;
 
@@ -21,7 +22,6 @@ public class ObservationMetier {
 	public Erreur verifier(ObservationDto obs) {
 		Erreur erreur  = new Erreur();
 		boolean champTexte = obs.getObsTexte().length() > 0;
-		boolean champProfil = true;// verifier le profil ??
 		
 		if(!champTexte) {
 			erreur.ajouterMessage("Le message concernant l'observation ne peut pas être vide.");
@@ -53,19 +53,16 @@ public class ObservationMetier {
 		ormToDto.setObsId(orm.getObsId());
 		ormToDto.setObsDateHeure(orm.getObsDateheure().toString());
 		ormToDto.setObsTexte(orm.getObsTexte());
+		ormToDto.setProfil(ProfilMetier.convertirUnOrmEnDto(orm.getProfil()));
 		
-		
-		ormToDto.setProfil(null); // ??
-		ormToDto.setCommande(null); // ??
-		
-	return ormToDto;	
+		return ormToDto;	
 	}
 		
 	
 		
 	
 	
-	public static Observation convertirUnDtoEnOrm(ObservationDto dto, Observation orm) {
+	public static Observation convertirUnDtoEnOrm(ObservationDto dto) {
 		return new Observation();
 	}
 }

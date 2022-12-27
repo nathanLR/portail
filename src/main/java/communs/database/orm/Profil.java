@@ -9,8 +9,8 @@ import java.util.List;
  * The persistent class for the profil database table.
  * 
  */
-@Table(name = "profil", schema = "portail")
 @Entity
+@Table(name = "profil", schema = "portail")
 public class Profil implements Serializable {
 	private static final long serialVersionUID = 1L;
 

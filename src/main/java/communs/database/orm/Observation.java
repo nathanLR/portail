@@ -9,8 +9,8 @@ import java.sql.Time;
  * The persistent class for the observation database table.
  * 
  */
-@Table(name ="observation", schema = "portail")
 @Entity
+@Table(name ="observation", schema = "portail")
 public class Observation implements Serializable {
 	private static final long serialVersionUID = 1L;
 

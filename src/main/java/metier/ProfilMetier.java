@@ -36,7 +36,7 @@ public class ProfilMetier {
 		return new Erreur();
 	}
 	
-	public ProfilDto convertirUnOrmEnDto(Profil orm) {
+	public static ProfilDto convertirUnOrmEnDto(Profil orm) {
 		ProfilDto ormToDto = new ProfilDto();
 		ormToDto.setPrfId(orm.getPrfId());
 		ormToDto.setPrfCode(orm.getPrfCode());

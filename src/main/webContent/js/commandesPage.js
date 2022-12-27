@@ -37,10 +37,10 @@ $(document).ready(function() {
 });
 
 const formatDate = (date) =>{
-	const dateSplit = date.split("/");
-	const jour = parseInt(dateSplit[0])>=1 && parseInt(dateSplit[0])<=31;
+	const dateSplit = date.split("-");
+	const jour = parseInt(dateSplit[2])>=1 && parseInt(dateSplit[2])<=31;
 	const mois = parseInt(dateSplit[1])>=1 && parseInt(dateSplit[1])<=12;
-	const annee = parseInt(dateSplit[2])>=2022;
+	const annee = parseInt(dateSplit[0])>=2022;
 	if(jour && mois && annee){
 		return true;
 	}else{

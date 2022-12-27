@@ -10,8 +10,8 @@ import java.util.List;
  * The persistent class for the commande database table.
  * 
  */
-@Table(name = "commande", schema = "portail")
 @Entity
+@Table(name = "commande", schema = "portail")
 public class Commande implements Serializable {
 	private static final long serialVersionUID = 1L;
 
