@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import communs.Erreur;
+import communs.database.orm.Observation;
 import communs.database.orm.Profil;
+import communs.dto.ObservationDto;
 import communs.dto.ProfilDto;
-
 
 public class ProfilMetier {
 	private EntityManager em;
@@ -16,41 +16,25 @@ public class ProfilMetier {
 	public ProfilMetier(EntityManager em) {
 		this.em = em;
 	}
-	
-	public Erreur verifier(ProfilDto obs) {
-		return new Erreur();
-	}
-	public List<ProfilDto> lister(){
-		return new ArrayList<ProfilDto>();
-	}
-	//select
-	public ProfilDto trouver(Integer id) {
-		return new ProfilDto();
-	}
-	//put
-	public Erreur modifier(ProfilDto cde) {
-		return new Erreur();
-	}
-	//insert
-	public Erreur inserer(ProfilDto cde) {
-		return new Erreur();
+	public static ProfilDto convertirUnOrmEnDto(Profil prfOrm) {
+		ProfilDto prfConverti = new ProfilDto();
+		prfConverti.setPrfId(prfOrm.getPrfId());
+		prfConverti.setPrfCode(prfOrm.getPrfCode());
+		prfConverti.setPrfMdp(prfOrm.getPrfMdp());
+		
+		if(prfOrm.getObservations().size() > 0) {
+			List<ObservationDto> observationsConverties = new ArrayList<ObservationDto>();
+			for(Observation obsOrm: prfOrm.getObservations()) {
+				observationsConverties.add(ObservationMetier.convertirUnOrmEnDto(obsOrm));
+			}
+			prfConverti.setObservations(observationsConverties);
+		}else {
+			prfConverti.setObservations(new ArrayList<ObservationDto>());
+		}
+		return prfConverti;
 	}
 	
-	public static ProfilDto convertirUnOrmEnDto(Profil orm) {
-		ProfilDto ormToDto = new ProfilDto();
-		ormToDto.setPrfId(orm.getPrfId());
-		ormToDto.setPrfCode(orm.getPrfCode());
-		ormToDto.setPrfMdp(orm.getPrfMdp());
-		
-		
-		ormToDto.setObservations(null); // ??
-		
-		
-		
-		return ormToDto;
-		
-	}
-	public Profil convertirUnDtoEnOrm(ProfilDto dto, Profil orm) {
-		return new Profil();
-	}
+//	public static Profil convetirUnDtoEnOrm(ProfilDto prfDto, Profil prfOrm) {
+//		
+//	}
 }

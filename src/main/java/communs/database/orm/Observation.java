@@ -2,7 +2,8 @@ package communs.database.orm;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Time;
+
+import java.util.Date;
 
 
 /**
@@ -20,7 +21,8 @@ public class Observation implements Serializable {
 	private Integer obsId;
 
 	@Column(name="obs_dateheure")
-	private Time obsDateheure;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date obsDateheure;
 
 	@Column(name="obs_texte")
 	private String obsTexte;
@@ -46,11 +48,11 @@ public class Observation implements Serializable {
 		this.obsId = obsId;
 	}
 
-	public Time getObsDateheure() {
+	public Date getObsDateheure() {
 		return this.obsDateheure;
 	}
 
-	public void setObsDateheure(Time obsDateheure) {
+	public void setObsDateheure(Date obsDateheure) {
 		this.obsDateheure = obsDateheure;
 	}
 

@@ -20,6 +20,7 @@ import communs.dto.ProfilDto;
 import communs.utils.Utilitaire;
 import database.Connexion;
 import services.CommandeService;
+import services.ObservationService;
 
 /**
  * Servlet implementation class CommandeServlet
@@ -66,40 +67,40 @@ public class CommandeServlet extends HttpServlet {
 		if (reqAction != null) {
 			// differentes actions possibles: creer; visualiser; modifier; dupliquer; supprimer;
 			
-			int cdeId;
-			request.setAttribute("action", reqAction);
-			
-			if(reqAction.equals("creer")) {
-				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-				disp.forward(request, response);
-			}
-			if(reqAction.equals("visualiser")) {
-				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-				session.setAttribute("commande", cdeService.actionRecuperation(cdeId));
-				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-				disp.forward(request, response);
-			}
-			if(reqAction.equals("modifier")) {
-				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-				session.setAttribute("commande", cdeService.actionRecuperation(cdeId));
-				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-				disp.forward(request, response);
-			}
-			if(reqAction.equals("dupliquer")) {
-				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-				CommandeDto commandeADupliquer = cdeService.actionRecuperation(cdeId);
-				commandeADupliquer.setCdeNum("");
-				session.setAttribute("commande", commandeADupliquer);
-				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-				disp.forward(request, response);
-			}
-			if(reqAction.equals("supprimer")) {
-				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-				cdeService.actionSuppression(cdeId);
-				request.setAttribute("commandes", cdeService.actionLister());
-				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
-				disp.forward(request, response);
-			}
+//			int cdeId;
+//			request.setAttribute("action", reqAction);
+//			
+//			if(reqAction.equals("creer")) {
+//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//			if(reqAction.equals("visualiser")) {
+//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+//				session.setAttribute("commande", cdeService.actionRecuperation(cdeId));
+//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//			if(reqAction.equals("modifier")) {
+//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+//				session.setAttribute("commande", cdeService.actionRecuperation(cdeId));
+//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//			if(reqAction.equals("dupliquer")) {
+//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+//				CommandeDto commandeADupliquer = cdeService.actionRecuperation(cdeId);
+//				commandeADupliquer.setCdeNum("");
+//				session.setAttribute("commande", commandeADupliquer);
+//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//			if(reqAction.equals("supprimer")) {
+//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+//				cdeService.actionSuppression(cdeId);
+//				request.setAttribute("commandes", cdeService.actionLister());
+//				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
+//				disp.forward(request, response);
+//			}
 			
 
 		} else {
@@ -130,44 +131,65 @@ public class CommandeServlet extends HttpServlet {
 		
 		// selon l'action, utilisation des données du formulaire + la commande qui a ete mise en session
 		
-		String reqAction = request.getParameter("action");
-		RequestDispatcher disp;
-		CommandeService cdeService = new CommandeService();
+//		String reqAction = request.getParameter("action");
+//		RequestDispatcher disp;
+//		CommandeService cdeService = new CommandeService();
+//		ObservationService obsService = new ObservationService();
+//		HttpSession session = request.getSession();
+//		
+//		if(reqAction.equals("creer")) {
+//			System.out.println("action creation");
+//			CommandeDto nouvelleCommande = Utilitaire.peuplerCommandeDepuisRequete(request);
+//			nouvelleCommande.setCdeObservations(new ArrayList<ObservationDto>()); // temporaire
+//			Erreur potentielleErreur = cdeService.actionCreation(nouvelleCommande);
+//			if(potentielleErreur != null) {
+//				// envoie d'une erreur à la vue
+//			}else {
+//				request.setAttribute("commandes", cdeService.actionLister());
+//				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//		}
+//		if(reqAction.equals("modifier")) {
+//			// utilisation de la commande en session
+//			
+//			System.out.println("action modification");
+//			CommandeDto commandeAModifier = (CommandeDto)session.getAttribute("commande");
+//			CommandeDto commandeModifiee = Utilitaire.peuplerCommandeDepuisRequete(request);
+//			commandeModifiee.setCdeId(commandeAModifier.getCdeId());
+//			
+//			
+//			Erreur potentielleErreur = cdeService.actionModification(commandeModifiee);
+//			if(potentielleErreur != null) {
+//				// envoie d'une erreur à la vue
+//			}else {
+//				session.removeAttribute("commande");
+//				request.setAttribute("commandes", cdeService.actionLister());
+//				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//			
+//		}
+//		if(reqAction.equals("visualiser")) {
+//			System.out.println("action visualisation");
+//			int cdeIdRajoutObservation = ((CommandeDto)session.getAttribute("commande")).getCdeId();
+//			
+//		}
+//		if(reqAction.equals("dupliquer")) {
+//			System.out.println("action duplication");
+//			CommandeDto cdeADupliquer = (CommandeDto)session.getAttribute("commande");
+//			
+//			Erreur potentielleErreur = cdeService.actionDuplication(cdeADupliquer.getCdeId(), request.getParameter("cdeNum"));
+//			if(potentielleErreur != null) {
+//				//erreur
+//			}else {
+//				session.removeAttribute("commande");
+//				request.setAttribute("commandes", cdeService.actionLister());
+//				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
+//				disp.forward(request, response);
+//			}
+//		}
 		
-		HttpSession session = request.getSession();
-		
-		if(reqAction.equals("creer")) {
-			System.out.println("action creation");
-			CommandeDto nouvelleCommande = Utilitaire.peuplerCommandeDepuisRequete(request);
-			nouvelleCommande.setCdeObservations(new ArrayList<ObservationDto>()); // temporaire
-			Erreur potentielleErreur = cdeService.actionCreation(nouvelleCommande);
-			if(potentielleErreur != null) {
-				// envoie d'une erreur à la vue
-			}else {
-				request.setAttribute("commandes", cdeService.actionLister());
-				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
-				disp.forward(request, response);
-			}
-		}
-		if(reqAction.equals("modifier")) {
-			// utilisation de la commande en session
-			
-			System.out.println("action modification");
-			CommandeDto commandeAModifier = (CommandeDto)session.getAttribute("commande");
-			CommandeDto commandeModifiee = Utilitaire.peuplerCommandeDepuisRequete(request);
-			commandeModifiee.setCdeId(commandeAModifier.getCdeId());
-			commandeModifiee.setCdeObservations(commandeAModifier.getCdeObservations());
-			
-			Erreur potentielleErreur = cdeService.actionModification(commandeModifiee);
-			if(potentielleErreur != null) {
-				// envoie d'une erreur à la vue
-			}else {
-				request.setAttribute("commandes", cdeService.actionLister());
-				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
-				disp.forward(request, response);
-			}
-			
-		}
 		
 
 	}
