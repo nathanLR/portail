@@ -8,6 +8,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.validator.GenericValidator;
+
+import communs.Erreur;
+import communs.ErreurType;
 import communs.database.orm.Commande;
 import communs.database.orm.Observation;
 import communs.dto.CommandeDto;
@@ -20,6 +24,15 @@ public class CommandeMetier {
 		this.em = em;
 	}
 	
+	public List<CommandeDto> lister(){
+		List<CommandeDto> listeCommandes = new ArrayList<CommandeDto>();
+		TypedQuery<Commande> requete = this.em.createNamedQuery("SelectionneToutesLesCommandes", Commande.class);
+		
+		for(Commande cde: requete.getResultList()) {
+			listeCommandes.add(this.convertirUnOrmEnDto(cde));
+		}
+		return listeCommandes;
+	}
 	
 	public CommandeDto trouver(Integer cdeId) {
 		
@@ -32,17 +45,60 @@ public class CommandeMetier {
 		
 	}
 	
-	public List<CommandeDto> lister(){
-		List<CommandeDto> listeCommandes = new ArrayList<CommandeDto>();
-		TypedQuery<Commande> requete = this.em.createNamedQuery("SelectionneToutesLesCommandes", Commande.class);
+	
+	public Erreur inserer(CommandeDto cde) {
+		Erreur erreur = verifier(cde);
 		
-		for(Commande cde: requete.getResultList()) {
-			listeCommandes.add(convertirUnOrmEnDto(cde));
+		if(erreur == null) {
+			System.out.println("Vérification des données réussie, insértion en cours...");
+			this.em.persist(this.convetirUnDtoEnOrm(cde, new Commande()));
 		}
-		return listeCommandes;
+		
+		return erreur;
 	}
 	
-	public static CommandeDto convertirUnOrmEnDto(Commande cdeOrm) {
+	public Erreur modifier(CommandeDto cde) {
+		Erreur erreur = verifier(cde);
+		if(erreur == null) {
+			System.out.println("Vérification des données réussie, modification en cours...");
+			Commande cdeAModifier = this.em.find(Commande.class, new Integer(cde.getCdeId()));
+			if(cdeAModifier == null) {
+				erreur = new Erreur(ErreurType.BDD);
+				erreur.ajouterMessage("Aucune commande trouvée pour l'indentifiant " + cde.getCdeId());
+			}else {
+				this.convetirUnDtoEnOrm(cde, cdeAModifier);
+			}
+		}
+		return erreur;
+	}
+	
+	public Erreur supprimer(int cdeId) {
+		Erreur erreur = null;
+		Commande cdeASupprimer = this.em.find(Commande.class, new Integer(cdeId));
+		if(cdeASupprimer != null) {
+			this.em.remove(cdeASupprimer);
+		}else {
+			erreur = new Erreur(ErreurType.BDD);
+			erreur.ajouterMessage("Aucune commande trouvée pour l'indentifiant " + cdeId);
+			
+		}
+		return erreur;
+	}
+	
+	public Erreur dupliquer(CommandeDto cde) {
+		Erreur erreur = verifier(cde);
+		
+		if(erreur == null) {
+			Commande cdeADupliquer = this.convetirUnDtoEnOrm(cde, new Commande());
+			this.em.persist(cdeADupliquer);
+			List<Observation> observations = new ArrayList<Observation>();
+			for(ObservationDto obs: cde.getCdeObservations()) {
+				
+			}
+		}
+	}
+	
+	public CommandeDto convertirUnOrmEnDto(Commande cdeOrm) {
 		CommandeDto cdeConverti = new CommandeDto();
 		cdeConverti.setCdeId(cdeOrm.getCdeId());
 		cdeConverti.setCdeNum(cdeOrm.getCdeNum());
@@ -69,16 +125,17 @@ public class CommandeMetier {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static Commande convetirUnDtoEnOrm(CommandeDto cdeDto, Commande cdeOrm) {
+	public Commande convetirUnDtoEnOrm(CommandeDto cdeDto, Commande cdeOrm) {
 		cdeOrm.setCdeNum(cdeDto.getCdeNum());
 		cdeOrm.setCdeClient(cdeDto.getCdeClient());
 		
 		String[] dateSplit = cdeDto.getCdeDate().split("/"); // 0 => jour; 1 => mois; 2 = année;
-		cdeOrm.setCdeDate(new Date(Integer.parseInt(dateSplit[2]) - 1900, Integer.parseInt(dateSplit[1]), Integer.parseInt(dateSplit[0])));
+		cdeOrm.setCdeDate(new Date(Integer.parseInt(dateSplit[2]) - 1900, Integer.parseInt(dateSplit[1]) - 1, Integer.parseInt(dateSplit[0])));
 		
 		cdeOrm.setCdeIntitule(cdeDto.getCdeIntitule());
 		cdeOrm.setCdeMontant(Double.parseDouble(cdeDto.getCdeMontant()));
 		
+		/*
 		// === ???? ===
 		List<Observation> observations = new ArrayList<Observation>(); 
 		for(ObservationDto obs: cdeDto.getCdeObservations()) {
@@ -86,6 +143,42 @@ public class CommandeMetier {
 		}
 		cdeOrm.setObservations(observations);
 		// ============
+		*/
+		 
 		return cdeOrm;
+	}
+	
+	public Erreur verifier(CommandeDto cde) {
+		// verifier cdeClient, cdeNum, cdeDate, cdeIntitule, cdeMontant
+		boolean client, num, intitule, montant, date;
+		
+		Erreur erreur = null;
+		
+		client = cde.getCdeClient().length() > 0;
+		num = cde.getCdeNum().startsWith("CDE");
+		intitule = cde.getCdeIntitule().length() > 0;
+		
+		try {
+			Double.parseDouble(cde.getCdeMontant());
+			montant = true;
+		}catch(NumberFormatException nfe) {
+			montant = false;
+			nfe.printStackTrace();
+		}
+		
+		String[] dateSplit = cde.getCdeDate().split("/");
+		if(dateSplit.length != 3) {
+			date = false;
+		}else {
+			date = GenericValidator.isDate(cde.getCdeDate(), "dd/MM/yyyy", true);
+		}
+		
+		if(!(client && num && intitule && montant && date)) {
+			System.out.println("Erreur lors de la verification des données.");
+			erreur  = new Erreur(ErreurType.SAISIE);
+			erreur.ajouterMessage("Erreur lors de la vérification des données.");
+		}
+		
+		return erreur;
 	}
 }

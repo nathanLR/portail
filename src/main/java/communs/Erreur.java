@@ -5,13 +5,21 @@ package communs;
 
 public class Erreur {
 	private String messageErreur;
-	public Erreur() {
+	private ErreurType erreurType;
+	public Erreur(ErreurType erreurType) {
 		this.messageErreur = "";
+		this.erreurType = erreurType;
 	}
 	public String getMessageErreur() {
 		return messageErreur;
 	}
 
+	public ErreurType getErreurType() {
+		return erreurType;
+	}
+	public void setErreurType(ErreurType erreurType) {
+		this.erreurType = erreurType;
+	}
 	public void setMessageErreur(String messageErreur) {
 		this.messageErreur = messageErreur;
 	}
