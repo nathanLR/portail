@@ -19,4 +19,9 @@ public class CommandeService {
 		CommandeMetier cdeMetier = new CommandeMetier(this.em);
 		return cdeMetier.lister();
 	}
+	
+	public CommandeDto actionTrouver(int cdeId) {
+		CommandeMetier cdeMetier = new CommandeMetier(this.em);
+		return cdeMetier.trouver(new Integer(cdeId));
+	}
 }

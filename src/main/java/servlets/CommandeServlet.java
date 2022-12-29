@@ -67,33 +67,55 @@ public class CommandeServlet extends HttpServlet {
 		if (reqAction != null) {
 			// differentes actions possibles: creer; visualiser; modifier; dupliquer; supprimer;
 			
-//			int cdeId;
-//			request.setAttribute("action", reqAction);
-//			
-//			if(reqAction.equals("creer")) {
-//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-//				disp.forward(request, response);
-//			}
-//			if(reqAction.equals("visualiser")) {
-//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-//				session.setAttribute("commande", cdeService.actionRecuperation(cdeId));
-//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-//				disp.forward(request, response);
-//			}
-//			if(reqAction.equals("modifier")) {
-//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-//				session.setAttribute("commande", cdeService.actionRecuperation(cdeId));
-//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-//				disp.forward(request, response);
-//			}
-//			if(reqAction.equals("dupliquer")) {
-//				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-//				CommandeDto commandeADupliquer = cdeService.actionRecuperation(cdeId);
-//				commandeADupliquer.setCdeNum("");
-//				session.setAttribute("commande", commandeADupliquer);
-//				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
-//				disp.forward(request, response);
-//			}
+			int cdeId;
+			request.setAttribute("action", reqAction);
+			
+			if(reqAction.equals("creer")) {
+				disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+				disp.forward(request, response);
+			}
+			
+			if(reqAction.equals("visualiser")) {
+				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+				CommandeDto cde = cdeService.actionTrouver(cdeId);
+				if(cde != null) {
+					session.setAttribute("commande", cde);
+					disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+					disp.forward(request, response);
+				}else {
+					disp = request.getRequestDispatcher("/jsp/404.jsp");
+					disp.forward(request, response);
+				}
+				
+			}
+			
+			if(reqAction.equals("modifier")) {
+				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+				CommandeDto cde = cdeService.actionTrouver(cdeId);
+				if(cde != null) {
+					session.setAttribute("commande", cde);
+					disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+					disp.forward(request, response);
+				}else {
+					disp = request.getRequestDispatcher("/jsp/404.jsp");
+					disp.forward(request, response);
+				}
+			}
+			
+			if(reqAction.equals("dupliquer")) {
+				cdeId = Integer.parseInt(request.getParameter("cdeId"));
+				CommandeDto cde = cdeService.actionTrouver(cdeId);
+				if(cde != null) {
+					cde.setCdeNum("");
+					session.setAttribute("commande", cde);
+					disp = request.getRequestDispatcher("/jsp/saisiecommande.jsp");
+					disp.forward(request, response);
+				}else {
+					disp = request.getRequestDispatcher("/jsp/404.jsp");
+					disp.forward(request, response);
+				}
+			}
+			
 //			if(reqAction.equals("supprimer")) {
 //				cdeId = Integer.parseInt(request.getParameter("cdeId"));
 //				cdeService.actionSuppression(cdeId);

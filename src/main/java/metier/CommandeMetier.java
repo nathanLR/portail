@@ -2,6 +2,7 @@ package metier;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -19,6 +20,18 @@ public class CommandeMetier {
 		this.em = em;
 	}
 	
+	
+	public CommandeDto trouver(Integer cdeId) {
+		
+		Commande cde = this.em.find(Commande.class, cdeId);
+		if(cde != null) {
+			return convertirUnOrmEnDto(cde);
+		}else {
+			return null;
+		}
+		
+	}
+	
 	public List<CommandeDto> lister(){
 		List<CommandeDto> listeCommandes = new ArrayList<CommandeDto>();
 		TypedQuery<Commande> requete = this.em.createNamedQuery("SelectionneToutesLesCommandes", Commande.class);
@@ -34,7 +47,7 @@ public class CommandeMetier {
 		cdeConverti.setCdeId(cdeOrm.getCdeId());
 		cdeConverti.setCdeNum(cdeOrm.getCdeNum());
 		
-		SimpleDateFormat traducteur = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat traducteur = new SimpleDateFormat("dd/MM/yyyy");
 		cdeConverti.setCdeDate(traducteur.format(cdeOrm.getCdeDate()));
 		
 		cdeConverti.setCdeClient(cdeOrm.getCdeClient());
@@ -45,7 +58,7 @@ public class CommandeMetier {
 			List<ObservationDto> obsConverties = new ArrayList<ObservationDto>();
 			
 			for(Observation obs: cdeOrm.getObservations()) {
-				obsConverties.add(ObservationMetier.convertirUnOrmEnDto(obs));
+				obsConverties.add(ObservationMetier.convertirUnOrmEnDto(obs, cdeConverti));
 			}
 			cdeConverti.setCdeObservations(obsConverties);
 		}else {
@@ -55,7 +68,24 @@ public class CommandeMetier {
 		return cdeConverti;
 	}
 	
-//	public static Commande convetirUnDtoEnOrm(CommandeDto cdeDto, Commande cdeOrm) {
-//		
-//	}
+	@SuppressWarnings("deprecation")
+	public static Commande convetirUnDtoEnOrm(CommandeDto cdeDto, Commande cdeOrm) {
+		cdeOrm.setCdeNum(cdeDto.getCdeNum());
+		cdeOrm.setCdeClient(cdeDto.getCdeClient());
+		
+		String[] dateSplit = cdeDto.getCdeDate().split("/"); // 0 => jour; 1 => mois; 2 = année;
+		cdeOrm.setCdeDate(new Date(Integer.parseInt(dateSplit[2]) - 1900, Integer.parseInt(dateSplit[1]), Integer.parseInt(dateSplit[0])));
+		
+		cdeOrm.setCdeIntitule(cdeDto.getCdeIntitule());
+		cdeOrm.setCdeMontant(Double.parseDouble(cdeDto.getCdeMontant()));
+		
+		// === ???? ===
+		List<Observation> observations = new ArrayList<Observation>(); 
+		for(ObservationDto obs: cdeDto.getCdeObservations()) {
+			observations.add(ObservationMetier.convertirUnDtoEnOrm(obs, null, cdeOrm)); // que mettre à la place de null ? comment récupérer l'orm de l'observation ?
+		}
+		cdeOrm.setObservations(observations);
+		// ============
+		return cdeOrm;
+	}
 }

@@ -33,8 +33,8 @@
 								<td><a href="commande?action=modifier&cdeId=${commande.cdeId}">${commande.cdeNum}</a>
 								</td>
 								<td>${commande.cdeClient}</td>
-								<td>${commande.cdeDate}</td>
-								<td>${commande.cdeMontant}</td>
+								<td class="text-right">${commande.cdeDate}</td>
+								<td class="text-right">${commande.cdeMontant}</td>
 								<td>
 									<a href="commande?action=visualiser&cdeId=${commande.cdeId}" class="btn btn-primary">
 										<span class="glyphicon glyphicon-zoom-in"></span>
