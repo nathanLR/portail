@@ -2,8 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import communs.Erreur;
+import communs.ErreurType;
 import communs.dto.CommandeDto;
 import communs.dto.ObservationDto;
 import communs.dto.ProfilDto;
 import communs.utils.Utilitaire;
-import database.Connexion;
 import services.CommandeService;
 import services.ObservationService;
 
@@ -57,7 +56,7 @@ public class CommandeServlet extends HttpServlet {
 		initProfil();
 		
 		HttpSession session = request.getSession();
-		session.removeAttribute("commande");
+		
 		RequestDispatcher disp;
 		
 		// action demandée par la requête;
@@ -117,11 +116,25 @@ public class CommandeServlet extends HttpServlet {
 			}
 			
 			if(reqAction.equals("supprimer")) {
+				System.out.println("action suppression");
 				cdeId = Integer.parseInt(request.getParameter("cdeId"));
-				//rajouter supression obs
-				Erreur erreurPotentielle = cdeService.actionSuppression(cdeId);
+				ObservationService obsService = new ObservationService();
+				Erreur erreurServiceObservation = null;
+				Erreur erreurServiceCommande = null;
+				Erreur erreurDeRetour = null;
+				CommandeDto cde = (CommandeDto)session.getAttribute("commande");
+				if(cde.getCdeObservations().size() > 0) {
+					erreurServiceObservation = obsService.actionSuppression(cde.getCdeObservations());
+				}
+				erreurServiceCommande = cdeService.actionSuppression(cdeId);
+				
+				if(erreurServiceCommande != null && erreurServiceObservation != null) {
+					erreurDeRetour = new Erreur(ErreurType.BDD);
+					erreurDeRetour.ajouterMessage("Une erreur est survenue lors de la suppression de la commande N° " + cdeId);
+				}
 				session.removeAttribute("commande");
-				if(erreurPotentielle != null) {
+				if(erreurDeRetour != null) {
+					request.setAttribute("erreur", erreurDeRetour);
 					disp = request.getRequestDispatcher("/jsp/404.jsp");
 					disp.forward(request, response);
 				}else {
@@ -129,7 +142,6 @@ public class CommandeServlet extends HttpServlet {
 					disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
 					disp.forward(request, response);
 				}
-				
 			}
 			
 
@@ -139,7 +151,7 @@ public class CommandeServlet extends HttpServlet {
 			disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
 			disp.forward(request, response);
 		}
-
+		
 	}
 
 	/**
@@ -170,10 +182,15 @@ public class CommandeServlet extends HttpServlet {
 		if(reqAction.equals("creer")) {
 			System.out.println("action creation");
 			CommandeDto nouvelleCommande = Utilitaire.peuplerCommandeDepuisRequete(request);
-			nouvelleCommande.setCdeObservations(new ArrayList<ObservationDto>()); // temporaire
-			Erreur potentielleErreur = cdeService.actionCreation(nouvelleCommande);
+			nouvelleCommande.setCdeObservations(new ArrayList<ObservationDto>());
+			if(request.getParameter("cdeObservation").length() > 0) {
+				ObservationDto nouvelleObservation = Utilitaire.peuplerObservationDepuisRequete(request);
+				nouvelleCommande.getCdeObservations().add(nouvelleObservation);
+			}
+			Erreur potentielleErreur = cdeService.actionCreation(nouvelleCommande, tmpProfilDto.getPrfId());
 			if(potentielleErreur != null) {
 				// envoie d'une erreur à la vue
+				request.setAttribute("erreur", potentielleErreur);
 				disp = request.getRequestDispatcher("/jsp/404.jsp");
 				disp.forward(request, response);
 			}else {
@@ -191,10 +208,11 @@ public class CommandeServlet extends HttpServlet {
 			CommandeDto commandeModifiee = Utilitaire.peuplerCommandeDepuisRequete(request);
 			commandeModifiee.setCdeId(commandeAModifier.getCdeId());
 			
+			Erreur potentielleErreur = cdeService.actionModification(commandeModifiee, tmpProfilDto.getPrfId());
 			
-			Erreur potentielleErreur = cdeService.actionModification(commandeModifiee);
 			if(potentielleErreur != null) {
 				// envoie d'une erreur à la vue
+				request.setAttribute("erreur", potentielleErreur);
 				disp = request.getRequestDispatcher("/jsp/404.jsp");
 				disp.forward(request, response);
 			}else {
@@ -205,25 +223,45 @@ public class CommandeServlet extends HttpServlet {
 			}
 			
 		}
-//		if(reqAction.equals("visualiser")) {
-//			System.out.println("action visualisation");
-//			int cdeIdRajoutObservation = ((CommandeDto)session.getAttribute("commande")).getCdeId();
-//			
-//		}
-//		if(reqAction.equals("dupliquer")) {
-//			System.out.println("action duplication");
-//			CommandeDto cdeADupliquer = (CommandeDto)session.getAttribute("commande");
-//			
-//			Erreur potentielleErreur = cdeService.actionDuplication(cdeADupliquer.getCdeId(), request.getParameter("cdeNum"));
-//			if(potentielleErreur != null) {
-//				//erreur
-//			}else {
-//				session.removeAttribute("commande");
-//				request.setAttribute("commandes", cdeService.actionLister());
-//				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
-//				disp.forward(request, response);
-//			}
-//		}
+		
+		if(reqAction.equals("visualiser")) {
+			System.out.println("action visualisation");
+			int cdeIdRajoutObservation = ((CommandeDto) session.getAttribute("commande")).getCdeId();
+			int prfIdRajoutObservation = tmpProfilDto.getPrfId();
+			ObservationDto obs = Utilitaire.peuplerObservationDepuisRequete(request);
+			ObservationService obsService = new ObservationService();
+			Erreur potentielleErreur = obsService.actionCreation(obs, cdeIdRajoutObservation, prfIdRajoutObservation);
+			
+			if(potentielleErreur == null) {
+				
+				session.removeAttribute("commande");
+				request.setAttribute("commandes", cdeService.actionLister());
+				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
+				disp.forward(request, response);		
+			}else {
+				request.setAttribute("erreur", potentielleErreur);
+				disp = request.getRequestDispatcher("/jsp/404.jsp");
+				disp.forward(request, response);
+				
+			}
+		}
+		
+		if(reqAction.equals("dupliquer")) {
+			System.out.println("action duplication");
+			CommandeDto cdeDupliquee = Utilitaire.peuplerCommandeDepuisRequete(request); 
+			int cdeADupliquerID = ((CommandeDto)session.getAttribute("commande")).getCdeId();
+			Erreur potentielleErreur = cdeService.actionDuplication(cdeDupliquee,cdeADupliquerID, tmpProfilDto.getPrfId());
+			if(potentielleErreur != null) {
+				request.setAttribute("erreur", potentielleErreur);
+				disp = request.getRequestDispatcher("/jsp/404.jsp");
+				disp.forward(request, response);
+			}else {
+				session.removeAttribute("commande");
+				request.setAttribute("commandes", cdeService.actionLister());
+				disp = request.getRequestDispatcher("/jsp/listecommande.jsp");
+				disp.forward(request, response);
+			}
+		}
 		
 		
 

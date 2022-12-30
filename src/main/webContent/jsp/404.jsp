@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<p>erreur d'url</p>
+	<p>${requestScope.erreur.erreurType}</p>
+	<p>${requestScope.erreur.message}</p>
 </body>
 </html>

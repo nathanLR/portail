@@ -26,10 +26,10 @@ public class CommandeService {
 		return cdeMetier.trouver(new Integer(cdeId));
 	}
 	
-	public Erreur actionCreation(CommandeDto cde) {
+	public Erreur actionCreation(CommandeDto cde, int prfId) {
 		this.em.getTransaction().begin();
 		CommandeMetier cdeMetier = new CommandeMetier(this.em);
-		Erreur erreur = cdeMetier.inserer(cde);
+		Erreur erreur = cdeMetier.inserer(cde, prfId);
 		if(erreur == null) {
 			this.em.getTransaction().commit();
 		}else {
@@ -39,10 +39,10 @@ public class CommandeService {
 		return erreur;
 	}
 	
-	public Erreur actionModification(CommandeDto cde) {
+	public Erreur actionModification(CommandeDto cde, int prfId) {
 		this.em.getTransaction().begin();
 		CommandeMetier cdeMetier = new CommandeMetier(this.em);
-		Erreur erreur = cdeMetier.modifier(cde);
+		Erreur erreur = cdeMetier.modifier(cde, prfId);
 		if(erreur == null) {
 			this.em.getTransaction().commit();
 		}else {
@@ -55,6 +55,18 @@ public class CommandeService {
 		this.em.getTransaction().begin();
 		CommandeMetier cdeMetier = new CommandeMetier(this.em);
 		Erreur erreur = cdeMetier.supprimer(cdeId);
+		if(erreur == null) {
+			this.em.getTransaction().commit();
+		}else {
+			this.em.getTransaction().rollback();
+		}
+		return erreur;
+	}
+	
+	public Erreur actionDuplication(CommandeDto cde,int cdeADupliquerId, int prfId ) {
+		this.em.getTransaction().begin();
+		CommandeMetier cdeMetier = new CommandeMetier(this.em);
+		Erreur erreur = cdeMetier.dupliquer(cde, cdeADupliquerId, prfId);
 		if(erreur == null) {
 			this.em.getTransaction().commit();
 		}else {

@@ -26,5 +26,8 @@ public class Erreur {
 	public void ajouterMessage(String nouveauMessage) {
 		this.messageErreur = this.messageErreur.concat(";"+nouveauMessage);
 	}
+	public String getMessage() {
+		return this.messageErreur;
+	}
 	
 }

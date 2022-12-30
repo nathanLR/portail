@@ -14,6 +14,7 @@ import communs.Erreur;
 import communs.ErreurType;
 import communs.database.orm.Commande;
 import communs.database.orm.Observation;
+import communs.database.orm.Profil;
 import communs.dto.CommandeDto;
 import communs.dto.ObservationDto;
 
@@ -35,7 +36,7 @@ public class CommandeMetier {
 	}
 	
 	public CommandeDto trouver(Integer cdeId) {
-		
+		System.out.println("Trouver cde");
 		Commande cde = this.em.find(Commande.class, cdeId);
 		if(cde != null) {
 			return convertirUnOrmEnDto(cde);
@@ -46,18 +47,22 @@ public class CommandeMetier {
 	}
 	
 	
-	public Erreur inserer(CommandeDto cde) {
+	public Erreur inserer(CommandeDto cde, int prfId) {
 		Erreur erreur = verifier(cde);
 		
 		if(erreur == null) {
 			System.out.println("Vérification des données réussie, insértion en cours...");
-			this.em.persist(this.convetirUnDtoEnOrm(cde, new Commande()));
+			Commande cdeOrm = this.convetirUnDtoEnOrm(cde, new Commande(), prfId);
+			this.em.persist(cdeOrm);
+			for(Observation obs: cdeOrm.getObservations()) {
+				this.em.persist(obs);
+			}
 		}
 		
 		return erreur;
 	}
 	
-	public Erreur modifier(CommandeDto cde) {
+	public Erreur modifier(CommandeDto cde, int prfId) {
 		Erreur erreur = verifier(cde);
 		if(erreur == null) {
 			System.out.println("Vérification des données réussie, modification en cours...");
@@ -66,7 +71,7 @@ public class CommandeMetier {
 				erreur = new Erreur(ErreurType.BDD);
 				erreur.ajouterMessage("Aucune commande trouvée pour l'indentifiant " + cde.getCdeId());
 			}else {
-				this.convetirUnDtoEnOrm(cde, cdeAModifier);
+				this.convetirUnDtoEnOrm(cde, cdeAModifier, prfId);
 			}
 		}
 		return erreur;
@@ -76,6 +81,7 @@ public class CommandeMetier {
 		Erreur erreur = null;
 		Commande cdeASupprimer = this.em.find(Commande.class, new Integer(cdeId));
 		if(cdeASupprimer != null) {
+			
 			this.em.remove(cdeASupprimer);
 		}else {
 			erreur = new Erreur(ErreurType.BDD);
@@ -85,20 +91,54 @@ public class CommandeMetier {
 		return erreur;
 	}
 	
-	public Erreur dupliquer(CommandeDto cde) {
+	public Erreur dupliquer(CommandeDto cde, int cdeADupliquerID, int prfId) {
 		Erreur erreur = verifier(cde);
 		
 		if(erreur == null) {
-			Commande cdeADupliquer = this.convetirUnDtoEnOrm(cde, new Commande());
-			this.em.persist(cdeADupliquer);
-			List<Observation> observations = new ArrayList<Observation>();
-			for(ObservationDto obs: cde.getCdeObservations()) {
-				
+			Commande cdeADupliquer = this.em.find(Commande.class, cdeADupliquerID);
+			if(cdeADupliquer == null) {
+				erreur = new Erreur(ErreurType.BDD);
+				erreur.ajouterMessage("Aucune commande trouvée pour l'identitiant " + cde.getCdeId());
+			}else {
+				Commande cdeDupliquee = this.dupliquerUnOrm(cde, cdeADupliquer);
+				this.em.persist(cdeDupliquee);
+				for(Observation obs: cdeDupliquee.getObservations()) {
+					this.em.persist(obs);
+				}
+			}
+			
+		}
+		
+		return erreur;
+	}
+	
+	public Commande dupliquerUnOrm(CommandeDto cdeDto, Commande cdeOrm) {
+		Commande cde = new Commande();
+		cde.setCdeNum(cdeDto.getCdeNum());
+		cde.setCdeClient(cdeOrm.getCdeClient());
+		cde.setCdeDate(cdeOrm.getCdeDate());
+		cde.setCdeIntitule(cdeOrm.getCdeIntitule());
+		cde.setCdeMontant(cdeOrm.getCdeMontant());
+		List<Observation> observations = new ArrayList<Observation>();
+		if(cdeOrm.getObservations().size() > 0) {
+			System.out.println("Duplication observation de taille : "+cdeOrm.getObservations().size());
+			for(Observation observation: cdeOrm.getObservations()) {
+				Observation obs = new Observation();
+				obs.setCommande(cde);
+				obs.setObsDateheure(observation.getObsDateheure());
+				obs.setObsTexte(observation.getObsTexte());
+				obs.setProfil(observation.getProfil());
+				observations.add(observation);
 			}
 		}
+		cde.setObservations(observations);
+		
+		return cde;
 	}
 	
 	public CommandeDto convertirUnOrmEnDto(Commande cdeOrm) {
+		System.out.println("=======");
+		System.out.println("Conversion ormCde => dto");
 		CommandeDto cdeConverti = new CommandeDto();
 		cdeConverti.setCdeId(cdeOrm.getCdeId());
 		cdeConverti.setCdeNum(cdeOrm.getCdeNum());
@@ -109,12 +149,13 @@ public class CommandeMetier {
 		cdeConverti.setCdeClient(cdeOrm.getCdeClient());
 		cdeConverti.setCdeMontant(cdeOrm.getCdeMontant() + "");
 		cdeConverti.setCdeIntitule(cdeOrm.getCdeIntitule());
-		
+		System.out.println(cdeOrm.getObservations().size());
 		if(cdeOrm.getObservations().size() > 0) {
+			ObservationMetier obsMetier = new ObservationMetier(this.em);
 			List<ObservationDto> obsConverties = new ArrayList<ObservationDto>();
 			
 			for(Observation obs: cdeOrm.getObservations()) {
-				obsConverties.add(ObservationMetier.convertirUnOrmEnDto(obs, cdeConverti));
+				obsConverties.add(obsMetier.convertirUnOrmEnDto(obs, cdeConverti));
 			}
 			cdeConverti.setCdeObservations(obsConverties);
 		}else {
@@ -125,7 +166,7 @@ public class CommandeMetier {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public Commande convetirUnDtoEnOrm(CommandeDto cdeDto, Commande cdeOrm) {
+	public Commande convetirUnDtoEnOrm(CommandeDto cdeDto, Commande cdeOrm, int prfId) {
 		cdeOrm.setCdeNum(cdeDto.getCdeNum());
 		cdeOrm.setCdeClient(cdeDto.getCdeClient());
 		
@@ -135,15 +176,17 @@ public class CommandeMetier {
 		cdeOrm.setCdeIntitule(cdeDto.getCdeIntitule());
 		cdeOrm.setCdeMontant(Double.parseDouble(cdeDto.getCdeMontant()));
 		
-		/*
-		// === ???? ===
-		List<Observation> observations = new ArrayList<Observation>(); 
+		List<Observation> observations = new ArrayList<Observation>();
+		ObservationMetier obsMetier = new ObservationMetier(this.em);
+		Profil prfOrm = this.em.find(Profil.class, new Integer(prfId));
+		
 		for(ObservationDto obs: cdeDto.getCdeObservations()) {
-			observations.add(ObservationMetier.convertirUnDtoEnOrm(obs, null, cdeOrm)); // que mettre à la place de null ? comment récupérer l'orm de l'observation ?
+			observations.add(obsMetier.convertirUnDtoEnOrm(obs, new Observation(), cdeOrm, prfOrm)); 
 		}
+		
 		cdeOrm.setObservations(observations);
-		// ============
-		*/
+		
+		
 		 
 		return cdeOrm;
 	}

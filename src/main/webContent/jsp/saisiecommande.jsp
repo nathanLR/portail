@@ -17,11 +17,11 @@
 	href="${pageContext.request.contextPath}/css/styles.css">
 </head>
 <body>
-	${sessionScope.commande.cdeId }
+	
 	<div class="container">
 		<div class="row">
 			<div class="col col-md-8 col-md-offset-2">
-				<h2>Saisir une nouvelle commande</h2>
+				<h2> <%=((String)request.getAttribute("action")).toUpperCase()%></h2>
 				
 				<div class="row">
 					<div class="col col-md-8 col-md-offset-2">
@@ -44,7 +44,7 @@
 									<input type="text" class="form-control" id="date_creation"
 										name="cdeDate" value="${sessionScope.commande.cdeDate }"
 										<%=request.getParameter("action").matches("dupliquer|visualiser") ? "readonly" : "" %>
-										placeholder="AAAA-MM-JJ"
+										placeholder="JJ/MM/AAAA"
 										>
 										
 								</div>
@@ -87,7 +87,7 @@
 									id="boutonDeSoumission" >
 									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 								</button>
-								<c:if test="${requestScope.action != 'dupliquer'}">
+								<c:if test="${requestScope.action.matches('visualiser|modifier')}">
 								<a class="btn btn-danger"
 									href="commande?action=supprimer&cdeId=${sessionScope.commande.cdeId }"><span
 									class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
