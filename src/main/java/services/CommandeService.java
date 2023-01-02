@@ -1,5 +1,6 @@
 package services;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -20,7 +21,10 @@ public class CommandeService {
 		CommandeMetier cdeMetier = new CommandeMetier(this.em);
 		return cdeMetier.lister();
 	}
-	
+	public List<CommandeDto> actionListerParFourchetteDeDates(Date dateDebut, Date dateFin){
+		CommandeMetier cdeMetier = new CommandeMetier(this.em);
+		return cdeMetier.listerParFourchetteDeDates(dateDebut, dateFin);
+	}
 	public CommandeDto actionTrouver(int cdeId) {
 		CommandeMetier cdeMetier = new CommandeMetier(this.em);
 		return cdeMetier.trouver(new Integer(cdeId));

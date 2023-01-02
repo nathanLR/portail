@@ -10,6 +10,27 @@
 	href="${pageContext.request.contextPath}/css/bootstrap.min.css">
 </head>
 <body style="padding-top: 200px">
+	<c:if test="${requestScope.erreur != null}">
+		<div class="modal fade in" id="erreurModal" tabindex="-1" role="dialog"
+			aria-labelledby="basicModal" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h2 class="modal-title" id="myModalLabel">Une erreur est survenue</h2>
+					</div>
+					<div class="modal-body">
+						<p>Type de l'erreur : <strong>${requestScope.erreur.erreurType}</strong></p>
+						<p>Message d'erreur : <strong>${requestScope.erreur.message}</strong></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</c:if>
 	<div class="container">
 		<div class="row ">
 			<div class="col col-md-4 col-md-push-4" style="margin:auto">
@@ -28,7 +49,8 @@
 			</div>
 		</div>
 	</div>
-
+	<script	src="${pageContext.request.contextPath}/js/jquery-1.12.4.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+	<script src="${pageContext.request.contextPath}/js/listePage.js"></script>
 </body>
 </html>

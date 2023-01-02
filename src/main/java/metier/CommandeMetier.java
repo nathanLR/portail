@@ -34,7 +34,15 @@ public class CommandeMetier {
 		}
 		return listeCommandes;
 	}
-	
+	public List<CommandeDto> listerParFourchetteDeDates(Date dateDebut, Date dateFin){
+		TypedQuery<Commande> requete = this.em.createQuery("select c from Commande c where c.cdeDate between :dateDebut and :dateFin", Commande.class);
+		List<Commande> resultat = requete.setParameter("dateDebut", dateDebut).setParameter("dateFin", dateFin).getResultList();
+		List<CommandeDto> listeCommandes = new ArrayList<CommandeDto>();
+		for(Commande cde: resultat) {
+			listeCommandes.add(this.convertirUnOrmEnDto(cde));
+		}
+		return listeCommandes;
+	}
 	public CommandeDto trouver(Integer cdeId) {
 		System.out.println("Trouver cde");
 		Commande cde = this.em.find(Commande.class, cdeId);
@@ -51,7 +59,6 @@ public class CommandeMetier {
 		Erreur erreur = verifier(cde);
 		
 		if(erreur == null) {
-			System.out.println("Vérification des données réussie, insértion en cours...");
 			Commande cdeOrm = this.convetirUnDtoEnOrm(cde, new Commande(), prfId);
 			this.em.persist(cdeOrm);
 			for(Observation obs: cdeOrm.getObservations()) {
@@ -65,7 +72,6 @@ public class CommandeMetier {
 	public Erreur modifier(CommandeDto cde, int prfId) {
 		Erreur erreur = verifier(cde);
 		if(erreur == null) {
-			System.out.println("Vérification des données réussie, modification en cours...");
 			Commande cdeAModifier = this.em.find(Commande.class, new Integer(cde.getCdeId()));
 			if(cdeAModifier == null) {
 				erreur = new Erreur(ErreurType.BDD);
@@ -121,7 +127,6 @@ public class CommandeMetier {
 		cde.setCdeMontant(cdeOrm.getCdeMontant());
 		List<Observation> observations = new ArrayList<Observation>();
 		if(cdeOrm.getObservations().size() > 0) {
-			System.out.println("Duplication observation de taille : "+cdeOrm.getObservations().size());
 			for(Observation observation: cdeOrm.getObservations()) {
 				Observation obs = new Observation();
 				obs.setCommande(cde);
@@ -137,8 +142,6 @@ public class CommandeMetier {
 	}
 	
 	public CommandeDto convertirUnOrmEnDto(Commande cdeOrm) {
-		System.out.println("=======");
-		System.out.println("Conversion ormCde => dto");
 		CommandeDto cdeConverti = new CommandeDto();
 		cdeConverti.setCdeId(cdeOrm.getCdeId());
 		cdeConverti.setCdeNum(cdeOrm.getCdeNum());
@@ -149,7 +152,7 @@ public class CommandeMetier {
 		cdeConverti.setCdeClient(cdeOrm.getCdeClient());
 		cdeConverti.setCdeMontant(cdeOrm.getCdeMontant() + "");
 		cdeConverti.setCdeIntitule(cdeOrm.getCdeIntitule());
-		System.out.println(cdeOrm.getObservations().size());
+		
 		if(cdeOrm.getObservations().size() > 0) {
 			ObservationMetier obsMetier = new ObservationMetier(this.em);
 			List<ObservationDto> obsConverties = new ArrayList<ObservationDto>();
@@ -217,7 +220,6 @@ public class CommandeMetier {
 		}
 		
 		if(!(client && num && intitule && montant && date)) {
-			System.out.println("Erreur lors de la verification des données.");
 			erreur  = new Erreur(ErreurType.SAISIE);
 			erreur.ajouterMessage("Erreur lors de la vérification des données.");
 		}

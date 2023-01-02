@@ -57,7 +57,6 @@ public class ObservationMetier {
 		Erreur erreur = null;
 		int iterateur = 0;
 		while(erreur == null && iterateur < observations.size()) {
-			for(ObservationDto obs: observations) {
 				Observation obsOrm = this.em.find(Observation.class, new Integer(observations.get(iterateur).getObsId()));
 				if(obsOrm == null) {
 					erreur = new Erreur(ErreurType.BDD);
@@ -67,19 +66,18 @@ public class ObservationMetier {
 					this.em.remove(obsOrm);
 				}
 				iterateur++;
-				
-			}
 		}
 		return erreur;
 	}
 	
 	public ObservationDto convertirUnOrmEnDto(Observation obsOrm, CommandeDto cde) {
-		System.out.println("conversion ormObs => dto");
+		
+		ProfilMetier prfMetier = new ProfilMetier(this.em);
 		ObservationDto obsConverti = new ObservationDto();
 		obsConverti.setObsId(obsOrm.getObsId());
 		obsConverti.setCommande(cde);
 		obsConverti.setObsTexte(obsOrm.getObsTexte());
-		obsConverti.setProfil(ProfilMetier.convertirUnOrmEnDto(obsOrm.getProfil()));
+		obsConverti.setProfil(prfMetier.convertirUnOrmEnDto(obsOrm.getProfil()));
 		
 		SimpleDateFormat traducteur = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		obsConverti.setObsDateHeure(traducteur.format(obsOrm.getObsDateheure()));

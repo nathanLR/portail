@@ -31,5 +31,8 @@ public class ProfilDto {
 	public void setObservations(List<ObservationDto> observations) {
 		this.observations = observations;
 	}
-	
+	@Override
+	public String toString() {
+		return "ID: " + this.prfId + "; Code: " + this.prfCode + "; MDP: " + this.prfMdp;
+	}
 }

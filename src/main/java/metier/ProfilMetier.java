@@ -1,13 +1,14 @@
 package metier;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 
-import communs.database.orm.Observation;
+
 import communs.database.orm.Profil;
-import communs.dto.ObservationDto;
+
 import communs.dto.ProfilDto;
 
 public class ProfilMetier {
@@ -19,35 +20,40 @@ public class ProfilMetier {
 	
 	public ProfilDto trouver(Integer prfId) {
 		Profil prf = this.em.find(Profil.class, prfId);
-		return convertirUnOrmEnDto(prf);
+		
+		return this.convertirUnOrmEnDto(prf);
+	}
+	public ProfilDto trouver(String prfCode) {
+		ProfilDto prf = null;
+		Profil prfOrm;
+		TypedQuery<Profil> requete = this.em.createQuery("select p from Profil p where p.prfCode = :prfCode", Profil.class);
+		try {
+			prfOrm = requete.setParameter("prfCode", prfCode).getSingleResult();
+			prf = this.convertirUnOrmEnDto(prfOrm);
+		}catch(NoResultException nre) {
+			// ?
+		}
+		return prf;
+		
 	}
 	
-	public static ProfilDto convertirUnOrmEnDto(Profil prfOrm) {
+	public ProfilDto convertirUnOrmEnDto(Profil prfOrm) {
 		ProfilDto prfConverti = new ProfilDto();
 		prfConverti.setPrfId(prfOrm.getPrfId());
-		prfConverti.setPrfCode(prfOrm.getPrfCode().toUpperCase());
+		prfConverti.setPrfCode(prfOrm.getPrfCode());
 		prfConverti.setPrfMdp(prfOrm.getPrfMdp());
-		
-//		if(prfOrm.getObservations().size() > 0) {
-//			List<ObservationDto> observationsConverties = new ArrayList<ObservationDto>();
-//			for(Observation obsOrm: prfOrm.getObservations()) {
-//				observationsConverties.add(ObservationMetier.convertirUnOrmEnDto(obsOrm));
-//			}
-//			prfConverti.setObservations(observationsConverties);
-//		}else {
-//			prfConverti.setObservations(new ArrayList<ObservationDto>());
-//		}
 		
 		return prfConverti;
 	}
-	// === ??? ===
-	public static Profil convetirUnDtoEnOrm(ProfilDto prfDto, Profil prfOrm) {
+	
+	public Profil convetirUnDtoEnOrm(ProfilDto prfDto, Profil prfOrm) {
+		prfOrm.setPrfId(prfDto.getPrfId());
 		prfOrm.setPrfCode(prfDto.getPrfCode());
 		prfOrm.setPrfMdp(prfDto.getPrfMdp());
 		
-		// champ observation
+		
 		
 		return prfOrm;
 	}
-	// ===========
+
 }
