@@ -1,12 +1,10 @@
 package metier;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import communs.Erreur;
 import communs.ErreurType;
@@ -22,20 +20,7 @@ public class ObservationMetier {
 	public ObservationMetier(EntityManager em) {
 		this.em = em;
 	}
-	public List<ObservationDto> lister(){
-		CommandeMetier cdeMetier = new CommandeMetier(this.em);
-		List<ObservationDto> listeObservations = new ArrayList<ObservationDto>();
-		TypedQuery<Observation> requete = this.em.createNamedQuery("SelectionneToutesLesObservations", Observation.class);
-		
-//		for(Observation obs: requete.getResultList()) {
-//			listeObservations.add(this.convertirUnOrmEnDto(obs, cdeMetier.convertirUnOrmEnDto(obs)));
-//		}
-		return listeObservations;
-	}
-//	public ObservationDto trouver(Integer obsId) {
-//		Observation obs = this.em.find(Observation.class, obsId);
-//		return convertirUnOrmEnDto(obs);
-//	}
+
 	
 	public Erreur inserer(ObservationDto obs, int cdeId, int prfId) {
 		Erreur erreur = verifier(obs);
