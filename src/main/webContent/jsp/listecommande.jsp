@@ -53,7 +53,7 @@
 						</p>
 					</div>
 					<div class="col col-md-9 text-right">
-							<form method="GET" action="commande" class="form-inline" id="dateForm">
+							<form method="GET" action="commande" class="form-inline" id="formulaireDate">
 								<div class="form-group">
 									<label class="sr-only" for=dateDebut>Date de début</label>
     								<input 
@@ -138,7 +138,12 @@
 	<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/datatables.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/validate-date.js"></script>
-	<script src="${pageContext.request.contextPath}/js/listePage.js"></script>
-	<script src="${pageContext.request.contextPath}/js/commandesPage.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/js/validationDate.js"></script>
+	<script type="text/javascript">
+		$("#commandesListe").DataTable({
+			searching: false,
+			paging: false
+		});
+	</script>
 </body>
 </html>

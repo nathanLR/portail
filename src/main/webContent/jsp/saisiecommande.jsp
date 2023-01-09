@@ -134,7 +134,7 @@
 	<script
 		src="${pageContext.request.contextPath}/js/jquery-1.12.4.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-	<script src="${pageContext.request.contextPath}/js/datatables.min.js"></script>
-	<%-- <script src="${pageContext.request.contextPath}/js/commandesPage.js"></script> --%>
+	<script  src="${pageContext.request.contextPath}/js/validate-date.js"></script>
+	<script  src="${pageContext.request.contextPath}/js/validationSaisieCommande.js"></script>
 </body>
 </html>

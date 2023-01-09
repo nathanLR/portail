@@ -179,17 +179,22 @@ public class CommandeMetier {
 		cdeOrm.setCdeIntitule(cdeDto.getCdeIntitule());
 		cdeOrm.setCdeMontant(Double.parseDouble(cdeDto.getCdeMontant()));
 		
-		List<Observation> observations = new ArrayList<Observation>();
-		ObservationMetier obsMetier = new ObservationMetier(this.em);
-		Profil prfOrm = this.em.find(Profil.class, new Integer(prfId));
-		
-		for(ObservationDto obs: cdeDto.getCdeObservations()) {
-			observations.add(obsMetier.convertirUnDtoEnOrm(obs, new Observation(), cdeOrm, prfOrm)); 
+		try {
+			if(cdeDto.getCdeObservations().size() > 0) {
+				List<Observation> observations = new ArrayList<Observation>();
+				ObservationMetier obsMetier = new ObservationMetier(this.em);
+				Profil prfOrm = this.em.find(Profil.class, new Integer(prfId));
+			
+				for(ObservationDto obs: cdeDto.getCdeObservations()) {
+					observations.add(obsMetier.convertirUnDtoEnOrm(obs, new Observation(), cdeOrm, prfOrm)); 
+				}
+			
+				cdeOrm.setObservations(observations);	
+			}
+		}catch(NullPointerException npe) {
+			System.out.println("Cette commande ne possède pas d'observations pour le moment");
+			cdeOrm.setObservations(new ArrayList<Observation>());
 		}
-		
-		cdeOrm.setObservations(observations);
-		
-		
 		 
 		return cdeOrm;
 	}

@@ -57,7 +57,7 @@ public class CommandeServlet extends HttpServlet {
 		
 		if (session.getAttribute("profil") == null) {
 			
-			response.sendRedirect("jsp/index.jsp");
+			response.sendRedirect("/Portail");
 		} else {
 			System.out.println(((ProfilDto)session.getAttribute("profil")).toString());
 			// action demandée par la requête;
